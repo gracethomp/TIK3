@@ -4,6 +4,7 @@ import java.util.Objects;
 public class Node {
     private char value;
     private int freq;
+    private String code;
     private Node leftChild;
     private Node rightChild;
 
@@ -31,6 +32,10 @@ public class Node {
         return value;
     }
 
+    public String getCode() {
+        return code;
+    }
+
     public void setLeftChild(Node leftChild) {
         this.leftChild = leftChild;
     }
@@ -47,14 +52,16 @@ public class Node {
         this.freq = freq;
     }
 
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Node node = (Node) o;
-        return freq == node.freq && Objects.equals(value, node.value) &&
-                Objects.equals(leftChild, node.leftChild) &&
-                Objects.equals(rightChild, node.rightChild);
+        return Objects.equals(value, node.value);
     }
 
     @Override
