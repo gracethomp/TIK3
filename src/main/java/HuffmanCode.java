@@ -1,8 +1,9 @@
 import java.util.*;
 
 public class HuffmanCode {
+
     private String inputString;
-    private String codedString = "";
+    private StringBuilder codedString = new StringBuilder();
     private PriorityQueue<Node> priorityQueue;
     private HashMap<Character, String> hashMap;
     private List<Node> list;
@@ -23,6 +24,7 @@ public class HuffmanCode {
             Node y = priorityQueue.poll();
             if(x.getValue() != '-')
                 list.add(x);
+            assert y != null;
             if(y.getValue() != '-')
                 list.add(y);
             Node f = new Node();
@@ -35,19 +37,19 @@ public class HuffmanCode {
             root = f;
             priorityQueue.add(f);
         }
-        printCode(root, "");
+        setCodeToNodes(root, "");
     }
 
     public void encode(){
         for (int i = 0; i < inputString.length(); i++) {
-            codedString = codedString + hashMap.get(inputString.charAt(i));
+            codedString.append(hashMap.get(inputString.charAt(i)));
         }
     }
 
     public String decode() {
         StringBuilder decoded = new StringBuilder();
         StringBuilder cur = new StringBuilder();
-        for (char c : codedString.toCharArray()) {
+        for (char c : codedString.toString().toCharArray()) {
             cur.append(c);
             for(Node n : list) {
                 if(n.getCode().equals(cur.toString())) {
@@ -58,18 +60,46 @@ public class HuffmanCode {
         }
         return String.valueOf(decoded);
     }
+    private static HashMap<Character, Double> getEntropyByLetter(String input) {
+        HashMap<Character, Double> symbols = new HashMap<>();
+        for (Map.Entry<Character, Double> e : getEachSymbol(input).entrySet()) {
+            symbols.put(e.getKey(), - (Math.log(e.getValue())/Math.log(2))*e.getValue());
+        }
+        return symbols;
+    }
 
-    private void printCode(Node root, String s) {
+    public static double getEntropy(String input) {
+        return getEntropyByLetter(input).values().stream()
+                .mapToDouble(Double::doubleValue).sum();
+    }
+    private static HashMap<Character, Double> getEachSymbol(String string) {
+        HashMap<Character, Double> symbols = new HashMap<>();
+        char[] chars = string.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (symbols.containsKey(chars[i])) {
+                continue;
+            }
+            final int j = i;
+            symbols.put(chars[j], (double) (string.chars()
+                    .filter(e -> e == chars[j]).count())/string.length());
+        }
+        return symbols;
+    }
+    public double compressionRatio() {
+        return (double) (inputString.length() * 8)/codedString.length();
+    }
+
+    private void setCodeToNodes(Node root, String s) {
         if (root.getLeftChild() == null && root.getRightChild() == null) {
             root.setCode(s);
             hashMap.put(root.getValue(), s);
-            System.out.println(root.getValue() + " : " + s);
+            //System.out.println(root.getValue() + " : " + s);
             return;
         }
         root.getLeftChild().setCode(s + "0");
         root.getRightChild().setCode(s + "1");
-        printCode(root.getLeftChild(), root.getLeftChild().getCode());
-        printCode(root.getRightChild(), root.getRightChild().getCode());
+        setCodeToNodes(root.getLeftChild(), root.getLeftChild().getCode());
+        setCodeToNodes(root.getRightChild(), root.getRightChild().getCode());
     }
 
     private void fillQueue() {
@@ -95,15 +125,7 @@ public class HuffmanCode {
         return count;
     }
 
-    public List<Node> getList() {
-        return list;
-    }
-
-    public String getCodedString() {
+    public StringBuilder getCodedString() {
         return codedString;
-    }
-
-    public HashMap<Character, String> getHashMap() {
-        return hashMap;
     }
 }
