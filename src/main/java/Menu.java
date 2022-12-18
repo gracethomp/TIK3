@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 public class Menu {
     private static final String FIRST_CHOICE = "File (1) or console (2)? (write number)";
+    private static final String CHOOSE_FORMAT = "Choose format (1 - PNG, 2 - EXE, 3 - MP4, 4 - TEXT): ";
     private static final String ONE = "1";
     private static final String TWO = "2";
     private static final String THREE = "3";
@@ -15,6 +16,12 @@ public class Menu {
     private static final String TXT = "src/main/resources/text.txt";
     private static final String MP4 = "src/main/resources/котик.mp4";
     private static final String EXE = "src/main/resources/pip3.9.exe";
+    private static final String CODED_STRING = "Coded string: ";
+    private static final String DECODED_STRING = "Decoded string: ";
+    private static final String COMPRESSION_RATIO = "Compression ratio: ";
+    private static final String ENTROPY = "Entropy: ";
+    private static final String SIZE = "Size in bit: ";
+
 
     public static void showMenu() throws IOException {
         System.out.println(FIRST_CHOICE);
@@ -28,7 +35,7 @@ public class Menu {
                 getResults(string, true);
                 break;
             } else if(number.equals(ONE)) {
-                System.out.println("Choose format (1 - PNG, 2 - EXE, 3 - MP4, 4 - TEXT): ");
+                System.out.println(CHOOSE_FORMAT);
                 String string1 = chooseFile();
                 getResults(new String(readFile(string1)), false);
                 break;
@@ -70,10 +77,12 @@ public class Menu {
         huffmanCode.buildTree();
         huffmanCode.encode();
         if(isConsole) {
-            System.out.println(huffmanCode.getCodedString());
-            System.out.println(huffmanCode.decode());
+            System.out.println(CODED_STRING + huffmanCode.getCodedString());
+            System.out.println(DECODED_STRING + huffmanCode.decode());
         }
-        System.out.println(huffmanCode.compressionRatio());
+        System.out.println(COMPRESSION_RATIO + huffmanCode.compressionRatio());
+        System.out.println(ENTROPY + HuffmanCode.getEntropy(string));
+        System.out.println(SIZE + huffmanCode.getCodedString().length());
     }
 
     private static byte[] readFile(String file) {

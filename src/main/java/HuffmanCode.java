@@ -3,40 +3,34 @@ import java.util.*;
 public class HuffmanCode {
 
     private String inputString;
-    private StringBuilder codedString = new StringBuilder();
+    private final StringBuilder codedString = new StringBuilder();
     private PriorityQueue<Node> priorityQueue;
     private HashMap<Character, String> hashMap;
-    private List<Node> list;
+    //private List<Node> list;
+    private Node root = new Node();
 
     public HuffmanCode(){}
     public HuffmanCode(String string){
         this.inputString = string;
         priorityQueue = new PriorityQueue<>(string.length(), new Node.MyComparator());
-        list = new ArrayList<>();
         hashMap = new HashMap<>();
     }
 
     public void buildTree() {
         fillQueue();
-        Node root = null;
         while (priorityQueue.size() > 1) {
             Node x = priorityQueue.poll();
             Node y = priorityQueue.poll();
-            if(x.getValue() != '-')
-                list.add(x);
-            assert y != null;
-            if(y.getValue() != '-')
-                list.add(y);
             Node f = new Node();
-
+            assert y != null;
             f.setFreq(x.getFreq() + y.getFreq());
             f.setValue('-');
             f.setLeftChild(x);
             f.setRightChild(y);
-
             root = f;
             priorityQueue.add(f);
         }
+
         setCodeToNodes(root, "");
     }
 
@@ -48,15 +42,22 @@ public class HuffmanCode {
 
     public String decode() {
         StringBuilder decoded = new StringBuilder();
-        StringBuilder cur = new StringBuilder();
+        Node node = priorityQueue.poll();
+        Node node1 = node;
+        int i = 0;
         for (char c : codedString.toString().toCharArray()) {
-            cur.append(c);
-            for(Node n : list) {
-                if(n.getCode().equals(cur.toString())) {
-                    decoded.append(n.getValue());
-                    cur = new StringBuilder();
-                }
+            assert node != null;
+            if(node.getValue() != '-') {
+                decoded.append(node.getValue());
+                node = node1;
             }
+            if(c == '0')
+                node = node.getLeftChild();
+            if(c == '1')
+                node = node.getRightChild();
+            i++;
+            if(i == codedString.toString().length())
+                decoded.append(node.getValue());
         }
         return String.valueOf(decoded);
     }
@@ -118,10 +119,9 @@ public class HuffmanCode {
 
     private int findCount(char symbol, String inputString) {
         int count = 0;
-        for (int i = 0; i < inputString.length(); i++) {
+        for (int i = 0; i < inputString.length(); i++)
             if(inputString.charAt(i) == symbol)
                 count++;
-        }
         return count;
     }
 
